@@ -60,12 +60,43 @@ while True:
         controller.loadData(catalog)
         print("Número de Arttistas registrados: " + str(lt.size(catalog['Artists'])))
         print("Número de obras de arte registradas: " + str(lt.size(catalog['Artworks'])))
-        print("Primeros 3 artistas: " + str(catalog['Artists']['elements'][:3]))
-        print("Ultimos 3 artistas: " + str(catalog['Artists']['elements'][-3:]))
-        print("Primeras 3 obras de arte: " + str(catalog['Artworks']['elements'][:3]))
-        print("Ultimas 3 obras de arte: " + str(catalog['Artworks']['elements'][-3:]))
+        print("")
+        print("Primeros 3 artistas: ") 
+        print(" ")
+        print(str(catalog['Artists']['elements'][:3]))
+        print("")
+        print("Ultimos 3 artistas: ")
+        print(" ")
+        print(str(catalog['Artists']['elements'][-3:]))
+        print("")
+        print("Primeras 3 obras de arte: ")
+        print("")
+        print(str(catalog['Artworks']['elements'][:3]))
+        print("")
+        print("Ultimas 3 obras de arte: " )
+        print("")
+        print(str(catalog['Artworks']['elements'][-3:]))
     elif int(inputs[0]) == 2:
-        pass
+        anioInicial = input("Año Inicial de busqueda:")
+        anioFinal = input("Año Final de busqueda:")
+
+    elif int(inputs[0]) == 3:
+        fechaInicial = input("Fecha inicial de busqueda (AAAA-MM-DD):")
+        fechaFinal = input("Fecha final de busqueda (AAAA-MM-DD):")
+
+    elif int(inputs[0]) == 4:
+        nombre = input("Nombre del Artista a buscar:")
+
+    elif int(inputs[0]) == 5:
+        obra = input("Las obras del Museo:")
+
+    elif int(inputs[0]) == 6:
+        departamento = input("Departamento de obras que se quiere conocer el precio estimado de transporte:")
+
+    elif int(inputs[0]) == 7:
+        anioInicial = input("Año inicial de las obras:")
+        anioFinal = input("Año final de las obras:")
+        areaDisponible = input("Area disponible para la exposicion (m^2):")
 
     else:
         sys.exit(0)
