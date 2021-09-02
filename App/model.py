@@ -36,8 +36,23 @@ los mismos.
 """
 
 # Construccion de modelos
+def newcatalog():
+    listtype = 'ARRAY_LIST'
+    catalog = { 'Artists': None,
+                'Artworks': None}
+    catalog['Artists'] = lt.newList(listtype) #, comparefunction = cmp_artist
+    catalog['Artworks'] = lt.newList(listtype) #, comparefunction =  cmp_artworks
 
+    return catalog
 # Funciones para agregar informacion al catalogo
+
+def addArtist(catalog, artist):
+    filtered = {'ArtistID': artist['ConstituentID'], 'Artist': artist['DisplayName'], 'Nationality': artist['Nationality'], 'Birthdate': artist['BeginDate']}
+    lt.addLast(catalog['Artists'], filtered)
+
+def addArtwork(catalog, artwork):
+    filtered = {'ArtistID': artwork['ConstituentID'], 'ObjectID': artwork['ObjectID'], 'Title': artwork['Title'], 'Date': artwork['Date'], 'Medium': artwork['Medium'], 'Classification': artwork['Classification'], 'Dimensions': artwork['Dimensions'], 'Weight': artwork['Weight (kg)'], 'CreditLine': artwork['CreditLine']}
+    lt.addLast(catalog['Artworks'], filtered)
 
 # Funciones para creacion de datos
 
