@@ -91,7 +91,7 @@ while True:
         #Se corrompio la libreria de Prettytable, en el reto se arreglara este inconveniente, al no ser vital para la medicion de tiempo de los sorts. Gracias por su comprension. :)
         
         
-        print('')
+        print(' ')
         print('El tiempo gastado en organizar los datos es: ' + tiempo + ' milisegundos')
 
     else:
