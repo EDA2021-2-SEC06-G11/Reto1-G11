@@ -76,7 +76,6 @@ def getagerange(catalog, date1, date2):
 def cronartwork(catalog, number, date1, date2, sorttype):
     if lt.size(catalog['Artworks']) >= number:
         sublist = lt.subList((catalog['Artworks']), 1, number)
-        print(lt.size(catalog['Artworks']))
         sublist = sublist.copy()
         c = lt.size(sublist) - 1
         while c > -1:

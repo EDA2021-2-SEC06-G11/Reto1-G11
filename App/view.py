@@ -38,12 +38,9 @@ operación solicitada
 def printMenu():
     print("Bienvenido")
     print("1- Cargar información en el catálogo")
-    print("2- Artistas en orden cronológico")
-    print('3- Adquisiciones en orden cronológico')
-    print('4- Obras de arte de artista por técnica')
-    print('5- Obras de arte por nacionalidad de artista')
-    print('6- Transportar obras de un departamento')
-    print('0- Proponer una nueva exposición en el museo')
+    print("2- Cargar sort utilizado")
+    print('3- Adquisiciones en orden cronológico y su tiempo se ordenamiento')
+    print('0- Salir del programa')
 
 
 catalog = None
@@ -61,10 +58,7 @@ while True:
         controller.loadData(catalog)
         print("Número de Artistas registrados: " + str(lt.size(catalog['Artists'])))
         print("Número de obras de arte registradas: " + str(lt.size(catalog['Artworks'])))
-        print("Primeros 3 artistas: " + str(catalog['Artists']['elements'][:3]))
-        print("Ultimos 3 artistas: " + str(catalog['Artists']['elements'][-3:]))
-        print("Primeras 3 obras de arte: " + str(catalog['Artworks']['elements'][:3]))
-        print("Ultimas 3 obras de arte: " + str(catalog['Artworks']['elements'][-3:]))
+
     
     elif int(inputs[0]) == 2:
         sorttype = input("ingrese el tipo de sort que desea: Insertion, Shell, Merge o Quick Sorts: ")
@@ -74,7 +68,7 @@ while True:
         Anofinal = str(input("Indique la fecha final en formato AAAA-MM-DD: "))
         sublistnum = int(input("Indique el tamaño de la lista: "))
         lista = (controller.cronartworks(catalog, sublistnum, Anoinicial, Anofinal, sorttype))
-        listah = lista[0]['elements']
+        listah = lista[0]
         lista2 = lista[0]
         tiempo = lista[1]
         print('')
@@ -97,8 +91,6 @@ while True:
         #Se corrompio la libreria de Prettytable, en el reto se arreglara este inconveniente, al no ser vital para la medicion de tiempo de los sorts. Gracias por su comprension. :)
         
         
-        print(listah[:3])
-        print(listah[-3:])
         print('')
         print('El tiempo gastado en organizar los datos es: ' + tiempo + ' milisegundos')
 
