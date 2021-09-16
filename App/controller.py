@@ -24,14 +24,15 @@ import config as cf
 import model
 import csv
 
+from DISClib.ADT import list as lt
 
 """
 El controlador se encarga de mediar entre la vista y el modelo.
 """
 
 # Inicialización del Catálogo de libros
-def InitCatalog():
-    catalog = model.newcatalog()
+def InitCatalog(tipolista):
+    catalog = model.newcatalog(tipolista)
     return catalog
 
 
@@ -52,6 +53,26 @@ def loadArtwork(catalog):
     for artwork in input_file:
         model.addArtwork(catalog, artwork)
 
+
 # Funciones de ordenamiento
 
+def cronartworks(catalog, number, date1, date2, sorttype):
+    return model.cronartwork(catalog, number, date1, date2, sorttype)
+
+
 # Funciones de consulta sobre el catálogo
+
+def getcronologicalartists(catalog, date1, date2):
+    return model.cronfilter(model.getagerange(catalog, date1, date2))
+
+def getagerange(catalog, date1, date2):
+    artists = catalog["Artists"]
+    cronartists = lt.newList()
+    for men in artists:
+        print(men)
+        mena = men['elements']
+        if ((men['Birthdate'] >= date1) and (men['Birthdate'] <= date2)):
+            trueartist = lt.getElement(artists, mena)
+            lt.addLast(cronartists, trueartist)
+    return cronartists
+

@@ -26,7 +26,7 @@ import sys
 import controller
 from DISClib.ADT import list as lt
 assert cf
-
+#from prettytable import PrettyTable
 
 """
 La vista se encarga de la interacción con el usuario
@@ -47,7 +47,7 @@ def printMenu():
 
 
 catalog = None
-
+sorttype = None
 """
 Menu principal
 """
@@ -55,17 +55,52 @@ while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
+        tipolista = input('Elija el tipo de lista, sea ya ARRAY_LIST o LINKED_LIST:')
         print("Cargando información de los archivos ....")
-        catalog = (controller.InitCatalog())
+        catalog = (controller.InitCatalog(tipolista))
         controller.loadData(catalog)
-        print("Número de Arttistas registrados: " + str(lt.size(catalog['Artists'])))
+        print("Número de Artistas registrados: " + str(lt.size(catalog['Artists'])))
         print("Número de obras de arte registradas: " + str(lt.size(catalog['Artworks'])))
         print("Primeros 3 artistas: " + str(catalog['Artists']['elements'][:3]))
         print("Ultimos 3 artistas: " + str(catalog['Artists']['elements'][-3:]))
         print("Primeras 3 obras de arte: " + str(catalog['Artworks']['elements'][:3]))
         print("Ultimas 3 obras de arte: " + str(catalog['Artworks']['elements'][-3:]))
+    
     elif int(inputs[0]) == 2:
-        pass
+        sorttype = input("ingrese el tipo de sort que desea: Insertion, Shell, Merge o Quick Sorts: ")
+
+    elif int(inputs[0]) == 3:
+        Anoinicial = str(input("Indique la fecha inicial en formato AAAA-MM-DD: "))
+        Anofinal = str(input("Indique la fecha final en formato AAAA-MM-DD: "))
+        sublistnum = int(input("Indique el tamaño de la lista: "))
+        lista = (controller.cronartworks(catalog, sublistnum, Anoinicial, Anofinal, sorttype))
+        listah = lista[0]['elements']
+        lista2 = lista[0]
+        tiempo = lista[1]
+        print('')
+        print("=============== Req No. 2 Inputs ===============")
+        print("Artworks acquired between " + str(Anoinicial) + " and " + str(Anofinal))
+        print('')
+        print('=============== Req No. 2 Answer ===============')
+        print('The MoMa acquired ' + str(lt.size(lista2)) + ' unique pieces bewteen' + str(Anoinicial) + " and " + str(Anofinal))
+        print("The first and last 3 artworks in range are...")
+
+        #table = PrettyTable(["ObjectID", "Title", "ArtistsNames", "Medium", "Dimensions", "Date", "DateAcquired", "URL"])
+
+        #table.add__row([listah[0]["ObjectID"], listah[0]["Title"], listah[0]["ArtistsNames"], listah[0]["Medium"], listah[0]["Dimensions"], listah[0]["Date"], listah[0]["DateAcquired"], listah[0]["URL"]])
+        #table.add__row([listah[1]["ObjectID"], listah[1]["Title"], listah[1]["ArtistsNames"], listah[1]["Medium"], listah[1]["Dimensions"], listah[1]["Date"], listah[1]["DateAcquired"], listah[1]["URL"]])
+        #table.add__row([listah[2]["ObjectID"], listah[2]["Title"], listah[2]["ArtistsNames"], listah[2]["Medium"], listah[2]["Dimensions"], listah[2]["Date"], listah[2]["DateAcquired"], listah[2]["URL"]])
+        #table.add__row([listah[-1]["ObjectID"], listah[-1]["Title"], listah[-1]["ArtistsNames"], listah[-1]["Medium"], listah[-1]["Dimensions"], listah[-1]["Date"], listah[-1]["DateAcquired"], listah[-2]["URL"]])
+        #table.add__row([listah[-2]["ObjectID"], listah[-2]["Title"], listah[-2]["ArtistsNames"], listah[-2]["Medium"], listah[-2]["Dimensions"], listah[-2]["Date"], listah[-2]["DateAcquired"], listah[-2]["URL"]])
+        #table.add__row([listah[-3]["ObjectID"], listah[-3]["Title"], listah[-3]["ArtistsNames"], listah[-3]["Medium"], listah[-3]["Dimensions"], listah[-3]["Date"], listah[-3]["DateAcquired"], listah[-3]["URL"]])
+        
+        #Se corrompio la libreria de Prettytable, en el reto se arreglara este inconveniente, al no ser vital para la medicion de tiempo de los sorts. Gracias por su comprension. :)
+        
+        
+        print(listah[:3])
+        print(listah[-3:])
+        print('')
+        print('El tiempo gastado en organizar los datos es: ' + tiempo + ' milisegundos')
 
     else:
         sys.exit(0)
