@@ -26,7 +26,7 @@ import sys
 import controller
 from DISClib.ADT import list as lt
 assert cf
-#from prettytable import PrettyTable
+from prettytable import PrettyTable
 
 """
 La vista se encarga de la interacción con el usuario
@@ -38,8 +38,9 @@ operación solicitada
 def printMenu():
     print("Bienvenido")
     print("1- Cargar información en el catálogo")
-    print("2- Cargar sort utilizado")
-    print('3- Adquisiciones en orden cronológico y su tiempo se ordenamiento')
+    print("2- Listar Cronologicamente Los Artistas")
+    print('3- Listar Cronologicamente las adquiciciones')
+    print('5- Transportar Obras de un Departamento')
     print('0- Salir del programa')
 
 
@@ -52,47 +53,145 @@ while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
-        tipolista = input('Elija el tipo de lista, sea ya ARRAY_LIST o LINKED_LIST:')
         print("Cargando información de los archivos ....")
-        catalog = (controller.InitCatalog(tipolista))
+        catalog = (controller.InitCatalog("ARRAY_LIST"))
         controller.loadData(catalog)
         print("Número de Artistas registrados: " + str(lt.size(catalog['Artists'])))
         print("Número de obras de arte registradas: " + str(lt.size(catalog['Artworks'])))
 
     
     elif int(inputs[0]) == 2:
-        sorttype = input("ingrese el tipo de sort que desea: Insertion, Shell, Merge o Quick Sorts: ")
+        ## LISTAR CRONOLOGICAMENTE ARTISTAS
+        Anoinicial = (input("Indique el año inicial: "))
+        Anofinal = (input("Indique el año inicial: "))
+        print("=============== Req No. 1 Inputs ===============")
+        print("Artist born between " + str(Anoinicial) + " and " + str(Anofinal))
+        print('')
+        print('=============== Req No. 1 Answer ===============')
+        lista = controller.getcronologicalartists(catalog, Anoinicial, Anofinal)
+        print('There are ' + str(lt.size(lista)) + ' artist born between ' + str(Anoinicial) + " and " + str(Anofinal))
+        print('')
+        print("The first and last 3 artists in range are...")
+        print(lista['elements'][:3])
+        print(lista['elements'][-3:])
+        #TODO Toca hacer el pretty table
 
     elif int(inputs[0]) == 3:
+        ## LISTAR CRONOLOGICAMENTE OBRAS EN UN RANGO
         Anoinicial = str(input("Indique la fecha inicial en formato AAAA-MM-DD: "))
         Anofinal = str(input("Indique la fecha final en formato AAAA-MM-DD: "))
-        sublistnum = int(input("Indique el tamaño de la lista: "))
-        lista = (controller.cronartworks(catalog, sublistnum, Anoinicial, Anofinal, sorttype))
-        listah = lista[0]
-        lista2 = lista[0]
-        tiempo = lista[1]
+        lista = (controller.cronartworks(catalog, Anoinicial, Anofinal))
         print('')
         print("=============== Req No. 2 Inputs ===============")
         print("Artworks acquired between " + str(Anoinicial) + " and " + str(Anofinal))
         print('')
         print('=============== Req No. 2 Answer ===============')
-        print('The MoMa acquired ' + str(lt.size(lista2)) + ' unique pieces bewteen' + str(Anoinicial) + " and " + str(Anofinal))
-        print("The first and last 3 artworks in range are...")
+        print('The MoMa acquired ' + str(lt.size(lista)) + ' unique pieces bewteen' + str(Anoinicial) + " and " + str(Anofinal))
+        print("The first and last 3 artworks in range are...") 
 
         #table = PrettyTable(["ObjectID", "Title", "ArtistsNames", "Medium", "Dimensions", "Date", "DateAcquired", "URL"])
+        #table.add_row([lista[1]["ObjectID"], lista[1]["Title"], lista[1]["ArtistsNames"], lista[1]["Medium"], lista[1]["Dimensions"], lista[1]["Date"], lista[1]["DateAcquired"], lista[1]["URL"]])
+        #table.add_row([lista[2]["ObjectID"], lista[2]["Title"], lista[2]["ArtistsNames"], lista[2]["Medium"], lista[2]["Dimensions"], lista[2]["Date"], lista[2]["DateAcquired"], lista[2]["URL"]])
+        #table.add_row([lista[-1]["ObjectID"], lista[-1]["Title"], lista[-1]["ArtistsNames"], lista[-1]["Medium"], lista[-1]["Dimensions"], lista[-1]["Date"], lista[-1]["DateAcquired"], lista[-2]["URL"]])
+        #table.add_row([lista[-2]["ObjectID"], lista[-2]["Title"], lista[-2]["ArtistsNames"], lista[-2]["Medium"], lista[-2]["Dimensions"], lista[-2]["Date"], lista[-2]["DateAcquired"], lista[-2]["URL"]])
+        #table.add_row([lista[-3]["ObjectID"], lista[-3]["Title"], lista[-3]["ArtistsNames"], lista[-3]["Medium"], lista[-3]["Dimensions"], lista[-3]["Date"], lista[-3]["DateAcquired"], lista[-3]["URL"]])
+        print(lista['elements'][:3])
+        print(lista['elements'][-3:])
+        #print(table)
+    elif int(inputs[0]) == 4:
+        ## Listar las tecnicas de las obras de un artista
+        artist = input('Introduzca el nombre del Artista: ')
+        result = controller.getartwoksandtech(catalog, artist)
+        print("=============== Req No. 3 Inputs ===============")
+        print('Examine the work of the artist named: ' + artist)
+        print('')
+        print('=============== Req No. 3 Answer ===============')
+        print(artist + ' with MoMA ID ' + str(result[0]['ConstituentID']) + ' has ' + str(lt.size(result[0]['Artworks'])) + ' in his/her name at the musem.')
+        print('There are ' + str(result[2]) + ' different mediums/techniques in his/her working')
 
-        #table.add__row([listah[0]["ObjectID"], listah[0]["Title"], listah[0]["ArtistsNames"], listah[0]["Medium"], listah[0]["Dimensions"], listah[0]["Date"], listah[0]["DateAcquired"], listah[0]["URL"]])
-        #table.add__row([listah[1]["ObjectID"], listah[1]["Title"], listah[1]["ArtistsNames"], listah[1]["Medium"], listah[1]["Dimensions"], listah[1]["Date"], listah[1]["DateAcquired"], listah[1]["URL"]])
-        #table.add__row([listah[2]["ObjectID"], listah[2]["Title"], listah[2]["ArtistsNames"], listah[2]["Medium"], listah[2]["Dimensions"], listah[2]["Date"], listah[2]["DateAcquired"], listah[2]["URL"]])
-        #table.add__row([listah[-1]["ObjectID"], listah[-1]["Title"], listah[-1]["ArtistsNames"], listah[-1]["Medium"], listah[-1]["Dimensions"], listah[-1]["Date"], listah[-1]["DateAcquired"], listah[-2]["URL"]])
-        #table.add__row([listah[-2]["ObjectID"], listah[-2]["Title"], listah[-2]["ArtistsNames"], listah[-2]["Medium"], listah[-2]["Dimensions"], listah[-2]["Date"], listah[-2]["DateAcquired"], listah[-2]["URL"]])
-        #table.add__row([listah[-3]["ObjectID"], listah[-3]["Title"], listah[-3]["ArtistsNames"], listah[-3]["Medium"], listah[-3]["Dimensions"], listah[-3]["Date"], listah[-3]["DateAcquired"], listah[-3]["URL"]])
         
-        #Se corrompio la libreria de Prettytable, en el reto se arreglara este inconveniente, al no ser vital para la medicion de tiempo de los sorts. Gracias por su comprension. :)
+
+        #print = lt.getElement(result[0]['Artworks']['elements'], 1)\
+        mtable = PrettyTable(['MediumName', 'Count'])
+        for num in range(1, lt.size(result[1])):
+            m1 = lt.getElement(result[1], num)
+            mtable.add_row([m1['Medium'], m1['Number']])
+            if num == 5:
+                break
+        medium = lt.getElement(result[1], 1)
+        medium2 = medium['Medium']
+        print('His/Her most used Medium/Technique is: ' + str(medium2) + ' with ' + str(medium['Number']) + ' pieces.')
+        print(mtable)
+        
+        ttable = PrettyTable(['ObjectID', 'Title', 'Medium', 'Dimensions', 'DateAcquired', 'Department', 'Classification', 'URL'])
+        
+        contador = 0
+        for art in range(1, lt.size(medium['Artworks'])+1):
+            m1a =lt.getElement(medium['Artworks'], art)
+            if contador == 4:
+                break
+            ttable.add_row([m1a['ObjectID'], m1a['Title'], m1a['Medium'], m1a['Dimensions'], m1a['DateAcquired'], m1a['Department'], m1a['Classification'], m1a['URL']])
+            contador = contador + 1
+        print('')
+        print('His/Her most used Medium/Techniques is: ' + medium2 + ' with ' + str(contador) + ' pieces.')
+        print('A sample of ' + str(contador) + ' ' + medium2 + ' from the collection are:')
+        print(ttable)
         
         
-        print(' ')
-        print('El tiempo gastado en organizar los datos es: ' + tiempo + ' milisegundos')
+            
+
+
+
+
+    elif int(inputs[0]) == 5:
+        dep = input('Introduzca el departamento que desea explorar: ')
+        result = controller.getcostfordep(catalog, dep)
+        print("=============== Req No. 5 Inputs ===============")
+        print('Estimate the cost to transport all artifacts in ' + dep + ' Departament')
+        print('')
+        print('=============== Req No. 5 Answer ===============')
+        print('The MOMA is going to transport ' + str(lt.size(result[0])) + ' from the ' + dep)
+        print('Estimated cargo weight (kg): ' + str((result[2])))
+        print('Estimated cargo cost (USD): ' + str((round(result[3], 3))))
+        print('')
+        prim1 = lt.getElement(result[0], 1)
+        prim2 = lt.getElement(result[0], 2)
+        prim3 = lt.getElement(result[0], 3)
+        prim4 = lt.getElement(result[0], 4)
+        prim5 = lt.getElement(result[0], 5)
+        prim1a = prim1['dep']
+        prim2a = prim2['dep']
+        prim3a = prim3['dep']
+        prim4a = prim4['dep']
+        prim5a = prim5['dep']
+        #print('ObjectID: ' + prim1['ObjectID'] + ', Title:' + prim2['Title'] + ', ArtistsNames' + prim1['ConsituentID'] + ', Medium' + prim1['Medium'] + ', Date' + prim1['Date'] + ', Dimensions: ' + prim1['Dimensions'] + ', Classification:' + prim1['Classification'] + ', TransCost (USD):' + (lt.getElement(result[0], 1)) + ', URL' + )
+        prim1c = lt.getElement(result[1], 1)
+        prim2c = lt.getElement(result[1], 2)
+        prim3c = lt.getElement(result[1], 3)
+        prim4c = lt.getElement(result[1], 4)
+        prim5c = lt.getElement(result[1], 5)
+        prim1b = prim1c['dep']
+        prim2b = prim2c['dep']
+        prim3b = prim3c['dep']
+        prim4b = prim4c['dep']
+        prim5b = prim5c['dep']
+        print('The TOP 5 most expensive items to transport are:')
+        table = PrettyTable(["ObjectID", "Title", "ArtistsNames", "Medium", "Date", "Dimensions", "Classification", "Transcost (USD)", "URL"])
+        table.add_row([str(prim1a["ObjectID"]), str(prim1a["Title"]), (prim1a["ConstituentID"]), str(prim1a["Medium"]), str(prim1a["Date"]), str(prim1a["Dimensions"]), str(prim1a["Classification"]), str(prim1['price']), str(prim1a["URL"])])
+        table.add_row([str(prim2a["ObjectID"]), str(prim2a["Title"]), (prim2a["ConstituentID"]), str(prim2a["Medium"]), str(prim2a["Date"]), str(prim2a["Dimensions"]), str(prim2a["Classification"]), str(prim2['price']), str(prim2a["URL"])])
+        table.add_row([str(prim3a["ObjectID"]), str(prim3a["Title"]), (prim3a["ConstituentID"]), str(prim3a["Medium"]), str(prim3a["Date"]), str(prim3a["Dimensions"]), str(prim3a["Classification"]), str(prim3['price']), str(prim3a["URL"])])
+        table.add_row([str(prim4a["ObjectID"]), str(prim4a["Title"]), (prim4a["ConstituentID"]), str(prim4a["Medium"]), str(prim4a["Date"]), str(prim4a["Dimensions"]), str(prim4a["Classification"]), str(prim4['price']), str(prim4a["URL"])])
+        table.add_row([str(prim5a["ObjectID"]), str(prim5a["Title"]), (prim5a["ConstituentID"]), str(prim5a["Medium"]), str(prim5a["Date"]), str(prim5a["Dimensions"]), str(prim5a["Classification"]), str(prim5['price']), str(prim5a["URL"])])
+        print(table)
+
+        print('The TOP 5 most oldests items to transport are:')
+        table2 = PrettyTable(["ObjectID", "Title", "ArtistsNames", "Medium", "Date", "Dimensions", "Classification", "Transcost (USD)", "URL"])
+        table2.add_row([str(prim1b["ObjectID"]), str(prim1b["Title"]), (prim1b["ConstituentID"]), str(prim1b["Medium"]), str(prim1b["Date"]), str(prim1b["Dimensions"]), str(prim1b["Classification"]), str(prim1c['Date']), str(prim1b["URL"])])
+        table2.add_row([str(prim2b["ObjectID"]), str(prim2b["Title"]), (prim2b["ConstituentID"]), str(prim2b["Medium"]), str(prim2b["Date"]), str(prim2b["Dimensions"]), str(prim2b["Classification"]), str(prim2c['Date']), str(prim2b["URL"])])
+        table2.add_row([str(prim3b["ObjectID"]), str(prim3b["Title"]), (prim3b["ConstituentID"]), str(prim3b["Medium"]), str(prim3b["Date"]), str(prim3b["Dimensions"]), str(prim3b["Classification"]), str(prim3c['Date']), str(prim3b["URL"])])
+        table2.add_row([str(prim4b["ObjectID"]), str(prim4b["Title"]), (prim4b["ConstituentID"]), str(prim4b["Medium"]), str(prim4b["Date"]), str(prim4b["Dimensions"]), str(prim4b["Classification"]), str(prim4c['Date']), str(prim4b["URL"])])
+        table2.add_row([str(prim5b["ObjectID"]), str(prim5b["Title"]), (prim5b["ConstituentID"]), str(prim5b["Medium"]), str(prim5b["Date"]), str(prim5b["Dimensions"]), str(prim5b["Classification"]), str(prim5c['Date']), str(prim5b["URL"])])
+        print(table2)
 
     else:
         sys.exit(0)

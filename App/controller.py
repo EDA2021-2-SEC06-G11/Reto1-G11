@@ -38,8 +38,8 @@ def InitCatalog(tipolista):
 
 # Funciones para la carga de datos
 def loadData(catalog):
-    loadArtwork(catalog)
     loadArtists(catalog)
+    loadArtwork(catalog)
 
 def loadArtists(catalog):
     artistfile = cf.data_dir + 'Artists-utf8-small.csv'
@@ -54,16 +54,19 @@ def loadArtwork(catalog):
         model.addArtwork(catalog, artwork)
 
 
+
 # Funciones de ordenamiento
 
-def cronartworks(catalog, number, date1, date2, sorttype):
-    return model.cronartwork(catalog, number, date1, date2, sorttype)
+
 
 
 # Funciones de consulta sobre el catálogo
 
 def getcronologicalartists(catalog, date1, date2):
-    return model.cronfilter(model.getagerange(catalog, date1, date2))
+    return model.getagerange(catalog, date1, date2)
+
+def cronartworks(catalog, date1, date2,):
+    return model.cronartwork(catalog, date1, date2)
 
 def getagerange(catalog, date1, date2):
     artists = catalog["Artists"]
@@ -76,3 +79,8 @@ def getagerange(catalog, date1, date2):
             lt.addLast(cronartists, trueartist)
     return cronartists
 
+def getartwoksandtech(catalog, artist):
+    return model.getartwoksandtech(catalog, artist)
+
+def getcostfordep(catalog, departament):
+    return model.getcostfordepa(catalog, departament)
