@@ -66,18 +66,21 @@ def addArtwork(catalog, artwork,):
 
     artists = lt.iterator(catalog['Artists'])
 
+    #filtered = {'ArtistID': artwork['ConstituentID'], 'ObjectID': artwork['ObjectID'], 'Title': artwork['Title'], 'Date': artwork['Date'], 'Medium': artwork['Medium'], 'Classification': artwork['Classification'], 'Dimensions': artwork['Dimensions'], 'Weight': artwork['Weight (kg)'], 'CreditLine': artwork['CreditLine']}
+    artists = lt.iterator(catalog['Artists'])
     constentIdArtwork = artwork['ConstituentID']
     Ids = constentIdArtwork.split(", ")
     Ids = LimpiarStringsId(Ids)
-    nameArtist = lt.newList("ARRAY_LIST")
-    countryArtist = lt.newList("ARRAY_LIST")
+    nameArtist = None
+    countryArtist = None
     for men in artists:
         constituentId = men['ConstituentID']
         for id in Ids:
             if id == (constituentId):
-                    lt.addLast(nameArtist, (men['DisplayName']))
-                    lt.addLast(countryArtist, (men['Nationality']))     
-
+                    nameArtist = men['DisplayName']
+                    countryArtist = men['Nationality']
+                    
+            
     artwork.update({'ArtistsNames': nameArtist,'Nationality':countryArtist})
     lt.addLast(catalog['Artworks'], artwork)
 
@@ -198,7 +201,7 @@ def getcostfordepa(catalog, departament):
                 cost = 48.00
             elif (depo['Weight (kg)']) != '' and float(depo['Weight (kg)']) > size*72:
                 size = float(depo['Weight (kg)'])
-                print('bruh')
+
             
             if cost != 48.00:
                 cost = size*72.00
@@ -213,74 +216,60 @@ def getcostfordepa(catalog, departament):
         sa.sort(inold, compareage)
     return indep, inold, t_weight, t_cost
 
-
 def organizeCountry(catalog):
     Artworks = catalog["Artworks"]
     iterator = lt.iterator(Artworks)
     ## Primero toca organizar las obras en listas por sus paises
-    Paises = lt.newList("ARRAY_LIST")
-    ObrasPorPais = lt.newList("ARRAY_LIST")
-    artwork = lt.getElement(Artworks, 1)
-    lt.addLast(Paises, artwork["Nationality"])
-    lista = lt.newList("ARRAY_LIST")
-    lt.addLast(lista, artwork)
-    lt.addLast(ObrasPorPais, lista)
+    Paises = []
+    ObrasPorPais = []
     for artwork in iterator:
-        tamañoPaises = lt.size(Paises)
+        tamañoPaises = Paises.__len__()
         ## Caso incial de los arrays
-
-    
-        ## Mirar en todo los paises a ver si hay un lugar donde poner esta obra
-        for index in range(0,tamañoPaises):
-            ## Caso en el que encuentra el pais donde deberia poner la obra
-            for pais in artwork['Nationality']:
-                if str(pais) == str(lt.getElement(Paises, index + 1)):
+        if tamañoPaises == 0:
+            Paises.append(artwork["Nationality"])
+            ObrasPorPais.append([artwork])
+        else:
+            ## Mirar en todo los paises a ver si hay un lugar donde poner esta obra
+            for index in range(0,tamañoPaises):
+                ## Caso en el que encuentra el pais donde deberia poner la obra
+                if str(artwork["Nationality"]) == str(Paises[index]):
                     ## La obra se coloca en el index actual de obras por pais en la lista de ese pais
-                    lista = lt.getElement(ObrasPorPais, index)
-                    lt.addLast(lista, artwork)
-                    lt.changeInfo(ObrasPorPais, index, lista)
-                    print(ObrasPorPais)
-                    print('b')
+                    ObrasPorPais[index].append(artwork)
                     break
-                    
                 ## Si ya llego al final de la lista y no encontro donde poner la artowrk creele una
                 # nueva categoria y guardela ahi    
-                elif index == tamañoPaises-1 and str(artwork["Nationality"]) != str(lt.getElement(Paises, index + 1)):
-                    lt.addLast(Paises, artwork["Nationality"])
-                    lista = lt.newList("ARRAY_LIST")
-                    lt.addLast(lista, artwork)
-                    lt.addLast(ObrasPorPais, lista)
-                        
+                elif index == tamañoPaises-1 and str(artwork["Nationality"]) != str(Paises[index]):
+                    Paises.append(artwork["Nationality"])
+                    ObrasPorPais.append([artwork])
 
 
     ## Ahora tenemos que organizar en terminos de que tan grande sea cada categoria
-    numObrasPorPais = lt.newList("ARRAY_LIST")
+    numObrasPorPais = []
     ## Llenamos un nuevo array con los tamaños de los arrays
-    iteracion = lt.iterator(ObrasPorPais)
-    for element in iteracion:
-        size = lt.size(element)
-        lt.addLast(numObrasPorPais, size)
+    for iteracion in ObrasPorPais:
+        size = iteracion.__len__()
+        numObrasPorPais.append(size)
 
     ## Organizamos el array teniendo en cuenta sus size mayor a menor
-    nombresOrdenados = lt.newList("ARRAY_LIST")
-    ObrasOrdenadas = lt.newList("ARRAY_LIST")
-    numObrasOrdenadas = lt.newList("ARRAY_LIST")
+    nombresOrdenados = []
+    ObrasOrdenadas = []
+    numObrasOrdenadas = []
     iterador = 0
-    sentinela = lt.size(numObrasPorPais)
+    sentinela = numObrasPorPais.__len__()
     while sentinela > 0:
         max = 0
-        for i in range(0, lt.size(numObrasPorPais)):
-            pais = lt.getElement(numObrasPorPais, i)
+        for i in range(0, numObrasPorPais.__len__()):
+            pais = numObrasPorPais[i]
             if pais >= max:
                 max = pais
                 iterador = i
-        lt.addLast(nombresOrdenados, lt.getElement(Paises, iterador))
-        lt.addLast(ObrasOrdenadas, lt.getElement(ObrasPorPais, iterador))
-        lt.addLast(numObrasOrdenadas, max)
-        lt.deleteElement(numObrasPorPais, iterador)
-        lt.deleteElement(Paises, iterador)
-        lt.deleteElement(ObrasPorPais, iterador)
-        sentinela = lt.size(numObrasPorPais)
+        nombresOrdenados.append(Paises[iterador])
+        ObrasOrdenadas.append(ObrasPorPais[iterador])
+        numObrasOrdenadas.append(max)
+        numObrasPorPais.pop(iterador)
+        Paises.pop(iterador)
+        ObrasPorPais.pop(iterador)
+        sentinela = numObrasPorPais.__len__()
 
     return nombresOrdenados,ObrasOrdenadas,numObrasOrdenadas
 

@@ -170,16 +170,15 @@ while True:
             
 
     elif int(inputs[0]) == 5:
-        start = time.time()
         print("organizando obras por nacionalidad...")
         Paises,ObrasPorPais,numPorPais = controller.organizeCountry(catalog)
         print(Paises)
         print(numPorPais)
 
         table = PrettyTable(["Pais","Obras"])
-
+        
         for i in range (0,10):
-            table.add_row([lt.getElement(Paises, i), lt.getElement(numPorPais, i)])
+            table.add_row([Paises[i],numPorPais[i]])
         print(table)
 
 
