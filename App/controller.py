@@ -42,13 +42,13 @@ def loadData(catalog):
     loadArtwork(catalog)
 
 def loadArtists(catalog):
-    artistfile = cf.data_dir + 'Artists-utf8-small.csv'
+    artistfile = cf.data_dir + 'Artists-utf8-10pct.csv'
     input_file = csv.DictReader(open(artistfile, encoding='utf-8'))
     for artist in input_file:
         model.addArtist(catalog, artist)
 
 def loadArtwork(catalog):
-    artworkfile = cf.data_dir + 'Artworks-utf8-small.csv'
+    artworkfile = cf.data_dir + 'Artworks-utf8-10pct.csv'
     input_file = csv.DictReader(open(artworkfile, encoding='utf-8'))
     for artwork in input_file:
         model.addArtwork(catalog, artwork)
@@ -84,3 +84,7 @@ def getartwoksandtech(catalog, artist):
 
 def getcostfordep(catalog, departament):
     return model.getcostfordepa(catalog, departament)
+
+
+def organizeCountry(catalog):
+    return model.organizeCountry(catalog)

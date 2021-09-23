@@ -25,13 +25,13 @@
  """
 
 
+from DISClib.DataStructures.singlelinkedlist import newList
 import config as cf
 from DISClib.ADT import list as lt
 from DISClib.Algorithms.Sorting import shellsort as sa
 from DISClib.Algorithms.Sorting import quicksort as sb
 from DISClib.Algorithms.Sorting import mergesort as sc
 from DISClib.Algorithms.Sorting import insertionsort as sd
-import time
 assert cf
 
 """
@@ -45,87 +45,264 @@ def newcatalog(listtype):
                 'Artworks': None}
     catalog['Artists'] = lt.newList(listtype) #, comparefunction = cmp_artist
     catalog['Artworks'] = lt.newList(listtype) #, comparefunction =  cmp_artworks
+    catalog['Productions'] = lt.newList(listtype) 
 
     return catalog
 # Funciones para agregar informacion al catalogo
 
 def addArtist(catalog, artist):
-    #filtered = {'ArtistID': artist['ConstituentID'], 'Artist': artist['DisplayName'], 'Nationality': artist['Nationality'], 'Birthdate': int(artist['BeginDate'])}
     lt.addLast(catalog['Artists'], artist)
+    prodfilter = {'ConstituentID': artist['ConstituentID'], 'Artist': artist['DisplayName'], 'Artworks': lt.newList('ARRAY_LIST')}
+    lt.addLast(catalog['Productions'], prodfilter)
 
-def addArtwork(catalog, artwork):
-    #filtered = {'ArtistID': artwork['ConstituentID'], 'ObjectID': artwork['ObjectID'], 'Title': artwork['Title'], 'Date': artwork['Date'], 'Medium': artwork['Medium'], 'Classification': artwork['Classification'], 'Dimensions': artwork['Dimensions'], 'Weight': artwork['Weight (kg)'], 'CreditLine': artwork['CreditLine']}
+
+def addArtwork(catalog, artwork,):
+    artists = lt.iterator(catalog['Productions'])
+    artistnum = artwork['ConstituentID'][1:-1].split(',')
+    for men in artists:
+        for artistn in artistnum:
+            if artistn == men['ConstituentID']:
+                lt.addLast(men['Artworks'], artwork)
+
+    artists = lt.iterator(catalog['Artists'])
+
+    constentIdArtwork = artwork['ConstituentID']
+    Ids = constentIdArtwork.split(", ")
+    Ids = LimpiarStringsId(Ids)
+    nameArtist = lt.newList("ARRAY_LIST")
+    countryArtist = lt.newList("ARRAY_LIST")
+    for men in artists:
+        constituentId = men['ConstituentID']
+        for id in Ids:
+            if id == (constituentId):
+                    lt.addLast(nameArtist, (men['DisplayName']))
+                    lt.addLast(countryArtist, (men['Nationality']))     
+
+    artwork.update({'ArtistsNames': nameArtist,'Nationality':countryArtist})
     lt.addLast(catalog['Artworks'], artwork)
 
-
 # Funciones para creacion de datos
+
+def LimpiarStringsId(Array):
+    arrayRespuesta = []
+    ## Hay dos casos, uno en el que el array es solo un numero y el otro en el que es dos o mas
+    if Array.__len__() == 1:
+        filt1 = Array[0].replace("[","")
+        filt2 = filt1.replace("]","")
+        arrayRespuesta.append(filt2)
+    else:
+        filt1 = Array[0].replace("[","")
+        Array[0] = filt1
+        filt2 = Array[-1].replace("]","")
+        Array[-1] = filt2
+        arrayRespuesta = Array
+    return arrayRespuesta
 
 
 # Funciones de consulta
 
 def getagerange(catalog, date1, date2):
-    artists = catalog["Artists"]
-    cronartists = lt.newList()
-    for men in range(date1, date2):
-        if ((men['Birthdate'] >= date1) and (men['Birthdate'] <= date2)):
-            trueartist = lt.getElement(artists, men)
-            lt.addLast(cronartists, trueartist)
+    artists = lt.iterator(catalog['Artists'])
+    cronartists = lt.newList("ARRAY_LIST")
+    for men in artists:
+        if (int(men['BeginDate']) >= int(date1) and int(men['BeginDate']) <= int(date2)):
+            lt.addLast(cronartists, men)
+    sa.sort(cronartists, compareages)
     return cronartists
 
+def cronartwork(catalog, date1, date2):
+    tamano = lt.size(catalog["Artworks"])
+    sublist = lt.subList((catalog['Artworks']), 1, tamano)
+    sublist = sublist.copy()
+    c = lt.size(sublist) - 1
+    while c > -1:
+        element = lt.getElement(sublist, c)
+        if element['DateAcquired'] < date1 or element['DateAcquired'] > date2:
+            lt.deleteElement(sublist, c)
+        sa.sort(sublist, cmpArtworkByDateAcquired)
+        c = c-1
+    return sublist
 
-def cronartwork(catalog, number, date1, date2, sorttype):
-    if lt.size(catalog['Artworks']) >= number:
-        sublist = lt.subList((catalog['Artworks']), 1, number)
-        sublist = sublist.copy()
-        c = lt.size(sublist) - 1
-        while c > -1:
-            element = lt.getElement(sublist, c)
-
-            if element['DateAcquired'] < date1 or element['DateAcquired'] > date2:
-                lt.deleteElement(sublist, c)
-
-            c = c - 1
-        if sorttype == 'Insertion':
-            start_time = time.process_time()
-            sd.sort(sublist, cmpArtworkByDateAcquired)
-            stop_time = time.process_time()
-
-        elif sorttype == 'Merge':
-            start_time = time.process_time()
-            sc.sort(sublist, cmpArtworkByDateAcquired)
-            stop_time = time.process_time()
-
-        elif sorttype == 'Quick Sorts':
-            start_time = time.process_time()
-            sb.sort(sublist, cmpArtworkByDateAcquired)
-            stop_time = time.process_time()
-
-        elif sorttype == 'Shell':
-            start_time = time.process_time()
-            sa.sort(sublist, cmpArtworkByDateAcquired)
-            stop_time = time.process_time()
-
+def getartwoksandtech(catalog, artist):
+    prod = lt.iterator(catalog['Productions'])
+    for element in prod:
+        if element['Artist'] == artist:
+            bruh = element
+    sa.sort(bruh['Artworks'], comparetechniques)
+    
+    
+    popularity = lt.newList("ARRAY_LIST")
+    comparator = lt.iterator(bruh['Artworks'])
+    art1 = None
+    art2 = None
+    n = 0
+    tech_num = 0
+    artlist = lt.newList("ARRAY_LIST")
+    for artwork in comparator:
+        
+        art1 = artwork['Medium']
+        if art1 != art2:
+            tech_num = tech_num + 1
+            if art2 != None:
+                lt.addLast(popularity, dic)
+            n = 1
+            artlist = lt.newList("ARRAY_LIST")
+            lt.addLast(artlist, artwork)
+            dic = {"Medium": artwork['Medium'], 'Number': n, 'Artworks': artlist}
+            art2 = art1
         else:
-            start_time = time.process_time()
-            sa.sort(sublist, cmpArtworkByDateAcquired)
-            stop_time = time.process_time()
+            n = n + 1
+            art2 = art1
+            lt.addLast(artlist, artwork)
+            dic = {"Medium": artwork['Medium'], 'Number': n, 'Artworks': artlist}
+    if art1 == None:
+        tech_num = 0
+    elif art1 == art2:
+        lt.addLast(popularity, dic)
+        
+    sa.sort(popularity, comparetechniques2)
 
-    else:
-        return 'N/A'
-    elapsed_time_mseg = str((stop_time - start_time)*1000)
-    return sublist, elapsed_time_mseg
+    return bruh, popularity, tech_num
+
+def dimensionsprocessor(dimenciones):
+    dimenciones = dimenciones.split('""')
+    return dimenciones
+
+def getcostfordepa(catalog, departament):
+    indep = lt.newList('ARRAY_LIST')
+    inold = lt.newList('ARRAY_LIST')
+    dep = lt.iterator(catalog['Artworks'])
+    t_cost = 0.0
+    t_weight = 0.0
+    for depo in dep:
+        size = ''
+        cost = 0
+        if depo["Department"] == departament:
+            
+            if depo['Height (cm)'] != '' and depo['Width (cm)'] != '':
+                size = float(depo['Height (cm)']) * float(depo['Width (cm)'])/10000
+
+            if depo['Depth (cm)'] != '' and depo['Depth (cm)'] != '0':
+                if depo['Diameter (cm)'] !='':
+                    size = float(depo['Depth (cm)']) * (float(depo['Diameter (cm)']))/1000000
+                elif (depo['Height (cm)'] != '' and depo['Height (cm)'] != '0') and (depo['Width (cm)'] != '0' and depo['Width (cm)'] != ''):
+                     size = float(depo['Height (cm)']) * float(depo['Width (cm)']) * float(depo['Depth (cm)'])/1000000 
+            
+            if depo['Circumference (cm)'] != '' and depo['Circumference (cm)'] != '0':
+                size = ((float(depo['Circumference (cm)'])/2)**2)/3.14
+                if depo['Diameter (cm)'] !='' and depo['Diameter (cm)'] !='0':
+                        size = float(depo['Circumference (cm)']) * float(depo['Diameter (cm)'])/10000 
+                        if depo['Length (cm)'] != '' and depo['Length (cm)'] != '0':
+                            size = float(depo['Circumference (cm)']) * float(depo['Diameter (cm)']) * float(depo['Length (cm)'])/1000000
+            if size == '' or size == 0:
+                cost = 48.00
+            elif (depo['Weight (kg)']) != '' and float(depo['Weight (kg)']) > size*72:
+                size = float(depo['Weight (kg)'])
+                print('bruh')
+            
+            if cost != 48.00:
+                cost = size*72.00
+
+            lt.addLast(indep, {'dep': depo, 'price': cost})
+            if depo['Date'] != '' and depo['Date'] != '0':
+                lt.addLast(inold, {'dep': depo, 'Date': depo['Date']})
+            t_cost = t_cost + cost
+            if depo['Weight (kg)'] != '':
+                t_weight = t_weight + float(depo['Weight (kg)'])
+        sa.sort(indep, comparecost)
+        sa.sort(inold, compareage)
+    return indep, inold, t_weight, t_cost
+
+
+def organizeCountry(catalog):
+    Artworks = catalog["Artworks"]
+    iterator = lt.iterator(Artworks)
+    ## Primero toca organizar las obras en listas por sus paises
+    Paises = lt.newList("ARRAY_LIST")
+    ObrasPorPais = lt.newList("ARRAY_LIST")
+    artwork = lt.getElement(Artworks, 1)
+    lt.addLast(Paises, artwork["Nationality"])
+    lista = lt.newList("ARRAY_LIST")
+    lt.addLast(lista, artwork)
+    lt.addLast(ObrasPorPais, lista)
+    for artwork in iterator:
+        tamañoPaises = lt.size(Paises)
+        ## Caso incial de los arrays
+
+    
+        ## Mirar en todo los paises a ver si hay un lugar donde poner esta obra
+        for index in range(0,tamañoPaises):
+            ## Caso en el que encuentra el pais donde deberia poner la obra
+            for pais in artwork['Nationality']:
+                if str(pais) == str(lt.getElement(Paises, index + 1)):
+                    ## La obra se coloca en el index actual de obras por pais en la lista de ese pais
+                    lista = lt.getElement(ObrasPorPais, index)
+                    lt.addLast(lista, artwork)
+                    lt.changeInfo(ObrasPorPais, index, lista)
+                    print(ObrasPorPais)
+                    print('b')
+                    break
+                    
+                ## Si ya llego al final de la lista y no encontro donde poner la artowrk creele una
+                # nueva categoria y guardela ahi    
+                elif index == tamañoPaises-1 and str(artwork["Nationality"]) != str(lt.getElement(Paises, index + 1)):
+                    lt.addLast(Paises, artwork["Nationality"])
+                    lista = lt.newList("ARRAY_LIST")
+                    lt.addLast(lista, artwork)
+                    lt.addLast(ObrasPorPais, lista)
+                        
+
+
+    ## Ahora tenemos que organizar en terminos de que tan grande sea cada categoria
+    numObrasPorPais = lt.newList("ARRAY_LIST")
+    ## Llenamos un nuevo array con los tamaños de los arrays
+    iteracion = lt.iterator(ObrasPorPais)
+    for element in iteracion:
+        size = lt.size(element)
+        lt.addLast(numObrasPorPais, size)
+
+    ## Organizamos el array teniendo en cuenta sus size mayor a menor
+    nombresOrdenados = lt.newList("ARRAY_LIST")
+    ObrasOrdenadas = lt.newList("ARRAY_LIST")
+    numObrasOrdenadas = lt.newList("ARRAY_LIST")
+    iterador = 0
+    sentinela = lt.size(numObrasPorPais)
+    while sentinela > 0:
+        max = 0
+        for i in range(0, lt.size(numObrasPorPais)):
+            pais = lt.getElement(numObrasPorPais, i)
+            if pais >= max:
+                max = pais
+                iterador = i
+        lt.addLast(nombresOrdenados, lt.getElement(Paises, iterador))
+        lt.addLast(ObrasOrdenadas, lt.getElement(ObrasPorPais, iterador))
+        lt.addLast(numObrasOrdenadas, max)
+        lt.deleteElement(numObrasPorPais, iterador)
+        lt.deleteElement(Paises, iterador)
+        lt.deleteElement(ObrasPorPais, iterador)
+        sentinela = lt.size(numObrasPorPais)
+
+    return nombresOrdenados,ObrasOrdenadas,numObrasOrdenadas
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 def compareages(artist1, artist2):
-     return (float(artist1['Birthdate']) > float(artist2['Birthdate']))
+     return ((artist1['BeginDate'] < artist2['BeginDate']))
 
 def cmpArtworkByDateAcquired(artwork1, artwork2):
     return (artwork1['DateAcquired'] < artwork2['DateAcquired'])
 
+def comparetechniques2(art1, art2):
+    return (art1['Number'] > art2['Number'])
+
+def comparetechniques(art1, art2):
+    return (art1['Medium'] < art2['Medium'])
+
+def comparecost(art1, art2):
+    return (art1['price'] > art2['price'])
+
+def compareage(art1, art2):
+    return (art1['Date'] < art2['Date'])
 
 
-# Funciones de ordenamiento
-
-def cronfilter(catalog):
-    sa.sort(catalog['Artistas'], compareages)
+# Funciones ordenamiento
